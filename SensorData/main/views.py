@@ -1,23 +1,27 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .utils import *
+from .sensor_data_handler import SensorDataHandler as sdh
+from .forms import FileForm
 
 def home(request):
-	#creating a random dataframe containing only values
-	np.random.seed(1)
-	rs = np.random.randn(100)
-	xs = [[0, 0]]
-	for idx, r in zip(range(1, len(rs) + 1), rs):
-		q_val = xs[-1][1] * 0.9 + r
-		xs.append([idx, q_val])
+    context = {"form": None, "data": None}
+    form = None
 
-	df = pd.DataFrame(xs, columns=['time', 'quantity'])
+    if request.method == 'POST':
+        form = FileForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_file = request.FILES['file']
 
-	max_val = maximum(df)
-	min_val = minimum(df)
-	rel_max_count = count_relative_maxima(df)
-	rel_min_count = count_relative_minima(df)
-	(avg_dec_slope, avg_inc_slope) = calc_slopes(df, ('time', 'quantity'))
+            data_handler = sdh(uploaded_file, time_field="Time", reading_field="Reading", sensor_field="Sensor", status_field="Status")
+            on_summary = data_handler.apply(method="summarise", status="ON")
+            off_summary = data_handler.apply(method="summarise", status="OFF")
+            data = {"on_data": on_summary, "off_data": off_summary}
 
-	context = {'max_val' : max_val, 'min_val' : min_val, 
-			   'rel_max_count' : rel_max_count, 'rel_min_count' : rel_min_count, 'avg_inc_slope' : avg_inc_slope, 'avg_dec_slope' : avg_dec_slope}
-	return render(request=request, template_name="main/home.html", context=context)
+            context["form"] = form
+            context["data"] = data
+
+            return render(request, 'main/home.html', context)
+    else:
+        form = FileForm()
+
+    context["form"] = form
+    return render(request, "main/home.html", context)

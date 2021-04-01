@@ -5,14 +5,68 @@
 
 	<body>
 		<h1>Sensor Data Analysis</h1>
-		<ol>
-			<li><b>Maximum Value : </b>{{max_val}}</li>
-			<li><b>Minimum Value : </b>{{min_val}}</li>
-			<li><b>Number of Maximum : </b>{{rel_max_count}}</li>
-			<li><b>Number of Minimum : </b>{{rel_min_count}}</li>
-			<li><b>Average Increasing Slope : </b>{{ avg_inc_slope }}</li>
-			<li><b>Average Decreasing Slope : </b>{{ avg_dec_slope }}</li>
-		</ol>
+
+		<!-- Accept user provided CSV file here -->
+		<form align="center" method="post" enctype="multipart/form-data">
+    	{% csrf_token %}
+			<label for="{{ form.file.id_for_label }}"> Upload your CSV file</label>
+			{{ form.file }}
+    	<input type="submit" value="Submit">
+		</form>
+
+		<!-- Display analysed data iff user has uploaded the CSV file -->
+		{% if data is not None %}
+
+				<h2>ON Data Summary for each sensor</h2>
+        <table>
+          <tr>
+            <th>Sensor</th>
+            <th>Maximum Reading</th>
+            <th>Minimum Reading</th>
+            <th>Maxima Count</th>
+            <th>Minima Count</th>
+            <th>Average Upward Slope</th>
+            <th>Average Downward Slope</th>
+          </tr>
+          <!-- {{ data.on_data.to_html|safe }} -->
+          {% for row in data.on_data %}
+            <tr>
+              <td>{{row.sensor}}</td>
+              <td>{{row.maximum}}</td>
+              <td>{{row.minimum}}</td>
+              <td>{{row.maxima_count}}</td>
+              <td>{{row.minima_count}}</td>
+              <td>{{row.avg_inc_slope}}</td>
+              <td>{{row.avg_dec_slope}}</td>
+            </tr>
+          {% endfor %}
+        </table>
+
+				<h2>OFF Data Summary for each sensor</h2>
+        <table>
+          <tr>
+            <th>Sensor</th>
+            <th>Maximum Reading</th>
+            <th>Minimum Reading</th>
+            <th>Maxima Count</th>
+            <th>Minima Count</th>
+            <th>Average Upward Slope</th>
+            <th>Average Downward Slope</th>
+          </tr>
+          {% for row in data.off_data %}
+            <tr>
+              <td>{{row.sensor}}</td>
+              <td>{{row.maximum}}</td>
+              <td>{{row.minimum}}</td>
+              <td>{{row.maxima_count}}</td>
+              <td>{{row.minima_count}}</td>
+              <td>{{row.avg_inc_slope}}</td>
+              <td>{{row.avg_dec_slope}}</td>
+            </tr>
+          {% endfor %}
+        </table>
+
+		{% endif %}
 
 	</body>
 

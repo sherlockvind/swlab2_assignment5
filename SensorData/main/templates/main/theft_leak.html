@@ -1,0 +1,73 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+Theft Leak
+{% endblock title %}
+
+
+{% block content %}  
+     <div class="container">
+      <h4 class="center-align">Event Summary</h4>
+
+      {% if data is None %}
+        <br>
+        <br>      
+        <form align="center" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      {% endif %}
+
+      <!-- Display analysed data iff user has uploaded the CSV file -->
+      {% if data is not None %}
+          <h5>Theft</h5>
+          <table>
+            <tr>
+              <th>Sensor</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Duration</th>
+              <th>Quantity</th>
+            </tr>
+            <!-- {{ data.on_data.to_html|safe }} -->
+            {% for row in data %}
+              {% for t in row.theft %}
+                <tr>
+                  <td>{{row.sensor}}</td>
+                  <td>{{t.start_time}}</td>
+                  <td>{{t.end_time}}</td>
+                  <td>{{t.duration}}</td>
+                  <td>{{t.quantity}}</td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </table>
+
+          <h5>Leakage</h5>
+          <table>
+            <tr>
+              <th>Sensor</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+              <th>Duration</th>
+              <th>Quantity</th>
+            </tr>
+            <!-- {{ data.on_data.to_html|safe }} -->
+            {% for row in data %}
+              {% for t in row.leak %}
+                <tr>
+                  <td>{{row.sensor}}</td>
+                  <td>{{t.start_time}}</td>
+                  <td>{{t.end_time}}</td>
+                  <td>{{t.duration}}</td>
+                  <td>{{t.quantity}}</td>
+                </tr>
+              {% endfor %}
+            {% endfor %}
+          </table>
+
+      {% endif %}
+
+    </div>
+{% endblock content %}

@@ -1,0 +1,40 @@
+<!-- Except Home Page all other pages resides within this base page -->
+{% load static %}
+<head>
+	<!--Import Google Icon Font-->
+    <link href= "https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
+      <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    {% block head %}
+    {% endblock head %}
+    <title>Sensor Data | {% block title %}{% endblock title %}</title>
+    <style>
+    	body{display: flex;
+    		min-height: 100vh;
+    		flex-direction: column;
+    	}
+    	 main {
+   			 flex: 1 0 auto;
+ 		}
+    </style>
+</head>
+
+<body >
+	<header>
+	{% include "main/includes/navbar.html" %}
+	</header>
+
+	<main>
+	  {% block content %}
+	  {% endblock %}
+	</main>
+
+	<footer class="page-footer center-align"> 
+    	© 2021 Sensor Data
+	</footer>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+</body>
+

@@ -5,4 +5,5 @@ app_name = 'main'
 
 urlpatterns = [
     path("", views.home, name="home"),
+    path("theft_leak/", views.theft_leak, name="theft_leak"),
 ]

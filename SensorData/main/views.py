@@ -25,3 +25,25 @@ def home(request):
 
     context["form"] = form
     return render(request, "main/home.html", context)
+
+
+def theft_leak(request):
+    context = {"form": None, "data": None}
+    form = None
+
+    if request.method == 'POST':
+        form = FileForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_file = request.FILES['file']
+
+            data_handler = sdh(uploaded_file, time_field="Time", reading_field="Reading", sensor_field="Sensor", status_field="Status")
+            data = data_handler.apply(method="theft_leak", status="OFF")
+
+            context["form"] = form
+            context["data"] = data
+            return render(request, 'main/theft_leak.html', context)
+    else:
+        form = FileForm()
+
+    context["form"] = form
+    return render(request, "main/theft_leak.html", context)

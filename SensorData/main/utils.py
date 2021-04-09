@@ -124,3 +124,10 @@ def theft_detection_off(df, time_field, reading_field, threshold=5):
             start_idx = None
     
     return data
+
+def summarise_tl(df, options):
+    time_field, reading_field, sensor_field, threshold = options
+    summarised_dict = {"theft": theft_detection_off(df, time_field, reading_field, threshold), 
+                       "leak": leak_detection_off(df, time_field, reading_field, threshold),
+                       "sensor": df[sensor_field].unique()[0]}
+    return summarised_dict

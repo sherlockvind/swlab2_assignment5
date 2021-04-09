@@ -33,6 +33,8 @@ class SensorDataHandler:
             return grouped_data.apply(calc_slopes, (self._time_field, self._reading_field))
         elif method == "summarise":
             return grouped_data.apply(summarise, (self._time_field, self._reading_field, self._sensor_field, neighbourhood_size))
+        elif method == "theft_leak":
+            return grouped_data.apply(summarise_tl, (self._time_field, self._reading_field, self._sensor_field, 5))
         else:
             print("{0} is not a registered method".format(method))
             return None

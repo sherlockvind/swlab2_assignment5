@@ -38,7 +38,7 @@ def theft_leak(request):
 
             data_handler = sdh(uploaded_file, time_field="Time", reading_field="Reading", sensor_field="Sensor", status_field="Status")
             data = data_handler.apply(method="theft_leak", status="OFF")
-
+            
             context["form"] = form
             context["data"] = data
             return render(request, 'main/theft_leak.html', context)

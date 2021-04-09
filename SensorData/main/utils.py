@@ -70,64 +70,72 @@ def leak_detection_off(df, time_field, reading_field, threshold=5):
     r = df[reading_field].to_numpy()
     start_idx = None
     data = []
-    
+
     for i in range(1, t.shape[0]):
         diff = r[i] - r[i-1]
         if diff < 0 and diff > -1*threshold:
             #a new leak entry
             if start_idx is None:
-                start_idx = i - 1                                          
+                start_idx = i - 1
         else:
             if start_idx:
-                leak_dict = {'start_time':t[start_idx], 'end_time':t[i-1], 
-                             'duration':t[i-1] - t[start_idx], 
+                leak_dict = {'start_time':t[start_idx], 'end_time':t[i-1],
+                             'duration':t[i-1] - t[start_idx],
                              'quantity':r[start_idx] - r[i-1]}
                 data.append(leak_dict)
                 start_idx = None
-                
+
         #handling last entry
         if i == t.shape[0] - 1 and start_idx:
-            leak_dict = {'start_time':t[start_idx], 'end_time':t[i], 
-                         'duration':t[i] - t[start_idx], 
+            leak_dict = {'start_time':t[start_idx], 'end_time':t[i],
+                         'duration':t[i] - t[start_idx],
                          'quantity':r[start_idx] - r[i]}
             data.append(leak_dict)
             start_idx = None
-                
+
     return data
-            
+
 def theft_detection_off(df, time_field, reading_field, threshold=5):
     t = df[time_field].to_numpy()
     r = df[reading_field].to_numpy()
     start_idx = None
     data = []
-    
+
     for i in range(1, t.shape[0]):
         diff = r[i] - r[i-1]
         if diff <= -1 * threshold:
             #a new theft entry
             if start_idx is None:
-                start_idx = i - 1                                          
+                start_idx = i - 1
         else:
             if start_idx:
-                theft_dict = {'start_time':t[start_idx], 'end_time':t[i-1], 
-                             'duration':t[i-1] - t[start_idx], 
+                theft_dict = {'start_time':t[start_idx], 'end_time':t[i-1],
+                             'duration':t[i-1] - t[start_idx],
                              'quantity':r[start_idx] - r[i-1]}
                 data.append(theft_dict)
                 start_idx = None
-                
+
         #handling last entry
         if i == t.shape[0] - 1 and start_idx:
-            theft_dict = {'start_time':t[start_idx], 'end_time':t[i], 
-                         'duration':t[i] - t[start_idx], 
+            theft_dict = {'start_time':t[start_idx], 'end_time':t[i],
+                         'duration':t[i] - t[start_idx],
                          'quantity':r[start_idx] - r[i]}
             data.append(theft_dict)
             start_idx = None
-    
+
     return data
+
+def maxima_locator(df, options):
+    time_field, reading_field, neighbourhood = options
+    # Find all the locations for local maximas
+    maxima_indices = argrelextrema(df[reading_field].to_numpy(), np.greater, order=neighbourhood)
+    maxima_data = df.iloc[maxima_indices[0]]
+    return maxima_data[[time_field, reading_field]].to_html(index_names=False, index=False)
 
 def summarise_tl(df, options):
     time_field, reading_field, sensor_field, threshold = options
-    summarised_dict = {"theft": theft_detection_off(df, time_field, reading_field, threshold), 
+    summarised_dict = {"theft": theft_detection_off(df, time_field, reading_field, threshold),
                        "leak": leak_detection_off(df, time_field, reading_field, threshold),
+                       "fuel_fill": maxima_locator(df, (time_field, reading_field, 1)),
                        "sensor": df[sensor_field].unique()[0]}
     return summarised_dict
